@@ -98,6 +98,13 @@ app.UseSwaggerUI();
 app.UseCors("AllowWebFrontend");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+app.MapGet("/health", () => Results.Ok(new
+{
+    status = "awake",
+    time = DateTime.UtcNow
+}));
+
 app.MapControllers();
 
 app.Run();

@@ -8,7 +8,8 @@ namespace NooshApp.Web.Controllers
     public class RewardsController : Controller
     {
         private readonly IRewardsApiClient _rewardsApiClient;
-        public RewardsController(IRewardsApiClient rewardsApiClient) { _rewardsApiClient = rewardsApiClient; }
+        private readonly ILogger<RewardsController> _logger;
+        public RewardsController(IRewardsApiClient rewardsApiClient, ILogger<RewardsController> logger) { _rewardsApiClient = rewardsApiClient; _logger = logger; }
 
         public async Task<IActionResult> Index()
         {
@@ -32,8 +33,19 @@ namespace NooshApp.Web.Controllers
         {
             if (!HttpContext.Session.IsLoggedIn()) return Unauthorized();
             var idToken = HttpContext.Session.GetIdToken()!;
-            var result = await _rewardsApiClient.GenerateQrAsync(idToken, null);
-            return result == null ? BadRequest() : Json(result);
+
+            try
+            {
+                var result = await _rewardsApiClient.GenerateQrAsync(idToken, null);
+                return result == null ? BadRequest(new { message = "The rewards service didn't respond correctly." }) : Json(result);
+            }
+            catch (Exception ex)
+            {
+                // Logs the REAL reason (timeout, DNS failure, 401, etc.) instead of
+                // silently returning null and leaving you guessing.
+                _logger.LogError(ex, "GenerateQr failed calling the Rewards API.");
+                return StatusCode(502, new { message = "Could not reach the rewards service. Please try again." });
+            }
         }
     }
 }
