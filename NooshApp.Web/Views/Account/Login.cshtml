@@ -1,0 +1,102 @@
+@{
+    ViewData["Title"] = "Login";
+}
+
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+
+<section class="auth-section">
+    <div class="container">
+        <div class="auth-card">
+            <p class="section-eyebrow text-center">Noosh Rewards</p>
+            <h1 class="auth-title">Log In With Email</h1>
+            <p class="auth-subtitle">We'll send you a secure sign-in link — no password needed.</p>
+
+            <div id="emailStep">
+                <div class="mb-3">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" id="emailAddress" class="form-control auth-input" placeholder="you@example.com" />
+                </div>
+                <button type="button" id="sendLinkBtn" class="btn btn-hero-primary w-100">
+                    <i class="fa-solid fa-paper-plane me-2"></i>Send Sign-In Link
+                </button>
+            </div>
+
+            <div id="sentMessage" class="d-none text-center">
+                <i class="fa-solid fa-envelope-circle-check" style="font-size:2rem;color:var(--color-primary-dark);"></i>
+                <p class="mt-2">Check your inbox and tap the link to log in.</p>
+            </div>
+
+            <div id="completingMessage" class="d-none text-center">
+                <p>Confirming your login…</p>
+            </div>
+
+            <div id="loginError" class="text-danger mt-3"></div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+<script>
+    const firebaseConfig = {
+        apiKey: "@ViewBag.FirebaseApiKey",
+        authDomain: "@ViewBag.FirebaseAuthDomain",
+        projectId: "@ViewBag.FirebaseProjectId"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    const errorBox = document.getElementById('loginError');
+
+    // ---- Case 1: user just landed here BY CLICKING the emailed link ----
+    if (firebase.auth().isSignInWithEmailLink(window.location.href)) {
+        document.getElementById('emailStep').classList.add('d-none');
+        document.getElementById('completingMessage').classList.remove('d-none');
+
+        let email = window.localStorage.getItem('nooshEmailForSignIn');
+        if (!email) {
+            // Link opened on a different device than it was requested on —
+            // ask them to confirm the email address to complete sign-in safely.
+            email = window.prompt('Please confirm your email address to complete login:');
+        }
+
+        firebase.auth().signInWithEmailLink(email, window.location.href)
+            .then(async (result) => {
+                window.localStorage.removeItem('nooshEmailForSignIn');
+                const idToken = await result.user.getIdToken();
+
+                const response = await fetch('/Account/CompleteLogin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `email=${encodeURIComponent(result.user.email)}&idToken=${encodeURIComponent(idToken)}`
+                });
+
+                window.location.href = response.ok ? '/Rewards' : '/Account/Login';
+            })
+            .catch((err) => {
+                document.getElementById('completingMessage').classList.add('d-none');
+                document.getElementById('emailStep').classList.remove('d-none');
+                errorBox.textContent = 'Login link invalid or expired: ' + err.message;
+            });
+    }
+
+    // ---- Case 2: normal visit — show the "enter email" form ----
+    document.getElementById('sendLinkBtn').addEventListener('click', async () => {
+        const email = document.getElementById('emailAddress').value.trim();
+        errorBox.textContent = '';
+
+        const actionCodeSettings = {
+            url: window.location.href, // link brings them back to this exact page
+            handleCodeInApp: true
+        };
+
+        try {
+            await firebase.auth().sendSignInLinkToEmail(email, actionCodeSettings);
+            window.localStorage.setItem('nooshEmailForSignIn', email);
+            document.getElementById('emailStep').classList.add('d-none');
+            document.getElementById('sentMessage').classList.remove('d-none');
+        } catch (err) {
+            errorBox.textContent = 'Could not send link: ' + err.message;
+        }
+    });
+</script>
+}
