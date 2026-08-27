@@ -43,8 +43,16 @@ builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(optio
     options.MultipartBodyLengthLimit = 25 * 1024 * 1024;
 });
 
+var firebaseKeyBase64 = builder.Configuration["Firebase:ServiceAccountKeyBase64"];
 var firebaseKeyPath = builder.Configuration["Firebase:ServiceAccountPath"];
-if (!string.IsNullOrEmpty(firebaseKeyPath) && File.Exists(firebaseKeyPath))
+
+if (!string.IsNullOrEmpty(firebaseKeyBase64))
+{
+    var tempPath = Path.Combine(Path.GetTempPath(), "firebase-key.json");
+    File.WriteAllBytes(tempPath, Convert.FromBase64String(firebaseKeyBase64));
+    FirebaseApp.Create(new AppOptions { Credential = GoogleCredential.FromFile(tempPath) });
+}
+else if (!string.IsNullOrEmpty(firebaseKeyPath) && File.Exists(firebaseKeyPath))
 {
     FirebaseApp.Create(new AppOptions { Credential = GoogleCredential.FromFile(firebaseKeyPath) });
 }
