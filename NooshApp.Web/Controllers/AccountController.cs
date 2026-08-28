@@ -21,7 +21,7 @@ namespace NooshApp.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult CompleteLogin(string email, string idToken)
+        public IActionResult CompleteLogin(string email, string idToken, string? fullName)
         {
             HttpContext.Session.SetLoggedInCustomer(email, idToken);
             return Ok();

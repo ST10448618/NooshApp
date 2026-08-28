@@ -2018,3 +2018,15 @@ h1, h2, h3, h4, h5, h6 {
 @media (max-width: 767.98px) {
     .admin-table { display: block; overflow-x: auto; white-space: nowrap; }
 }
+
+#authTabs { display: flex; gap: 0.5rem; }
+#authTabs .tab-btn {
+    flex: 1;
+    padding: 0.6rem;
+    border: 2px solid var(--color-ink);
+    background: var(--color-white);
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    cursor: pointer;
+}
+#authTabs .tab-btn.active { background: var(--color-ink); color: var(--color-primary); }
