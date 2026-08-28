@@ -16,7 +16,11 @@ namespace NooshApp.Api.Dtos
         public decimal AmountPaid { get; set; }
         public DateOnly PurchaseDate { get; set; }
     }
-    public class StaffRedeemRequestDto { public string Email { get; set; } = string.Empty; public int RewardRuleId { get; set; } }
+    public class StaffRedeemRequestDto { 
+        public string Email { get; set; } = string.Empty; 
+        public int RewardRuleId { get; set; } 
+        
+    }
     public class CreateRewardRuleRequestDto
     {
         public string Name { get; set; } = string.Empty;

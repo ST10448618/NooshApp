@@ -54,8 +54,7 @@ namespace NooshApp.Api.Controllers
         [ServiceFilter(typeof(StaffPinFilter))]
         public async Task<IActionResult> Redeem([FromBody] StaffRedeemRequestDto request)
         {
-            var email = GetVerifiedEmail();
-            var result = await _rewardsService.RedeemRewardAsync(email, request.RewardRuleId);
+            var result = await _rewardsService.RedeemRewardAsync(request.Email, request.RewardRuleId);
             return result.Success ? Ok(result) : BadRequest(result);
         }
     }
