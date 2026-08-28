@@ -39,5 +39,6 @@ namespace NooshApp.Api.Controllers
             await _adminService.UpdatePointsPerRandAsync(request.PointsPerRand);
             return Ok(new { message = "Settings updated." });
         }
+        
     }
 }

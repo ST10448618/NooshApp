@@ -1872,7 +1872,7 @@ h1, h2, h3, h4, h5, h6 {
    INTERNAL TOOLS — Staff & Admin (branded, professional)
    ============================================ */
 .internal-page-body {
-    background-color: var(--color-ink);
+    background-color: var(--color-white);
     min-height: 100vh;
     margin: 0;
 }
