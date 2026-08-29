@@ -56,6 +56,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStatusCodePagesWithReExecute("/NotFound");
 app.UseStaticFiles();
 app.UseRouting();
 app.UseSession();

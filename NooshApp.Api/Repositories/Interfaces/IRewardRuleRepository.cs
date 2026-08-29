@@ -8,5 +8,6 @@ namespace NooshApp.Api.Repositories.Interfaces
         Task<RewardRule?> GetByIdAsync(int id);
         Task<RewardRule> CreateAsync(RewardRule rule);
         Task UpdateAsync(RewardRule rule);
+        Task DeleteAsync(int id);
     }
 }

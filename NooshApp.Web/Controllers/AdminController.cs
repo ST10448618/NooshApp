@@ -78,5 +78,15 @@ namespace NooshApp.Web.Controllers
             HttpContext.Session.ClearAdminKey();
             return RedirectToAction("Login");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteRule(int id)
+        {
+            var adminKey = HttpContext.Session.GetAdminKey();
+            if (string.IsNullOrEmpty(adminKey)) return Unauthorized();
+
+            await _adminApiClient.DeleteRewardRuleAsync(adminKey, id);
+            return RedirectToAction("Rewards");
+        }
     }
 }

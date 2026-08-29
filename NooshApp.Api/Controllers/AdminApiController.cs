@@ -40,5 +40,11 @@ namespace NooshApp.Api.Controllers
             return Ok(new { message = "Settings updated." });
         }
         
+        [HttpDelete("reward-rules/{id}")]
+        public async Task<IActionResult> DeleteRewardRule(int id)
+        {
+            await _adminService.DeleteRewardRuleAsync(id);
+            return Ok(new { message = "Reward deleted." });
+        }
     }
 }

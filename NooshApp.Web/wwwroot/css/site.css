@@ -2030,3 +2030,13 @@ h1, h2, h3, h4, h5, h6 {
     cursor: pointer;
 }
 #authTabs .tab-btn.active { background: var(--color-ink); color: var(--color-primary); }
+
+.admin-delete-btn {
+    background: none;
+    border: 2px solid #a30000;
+    color: #a30000;
+    padding: 0.4rem 0.7rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+.admin-delete-btn:hover { background: #a30000; color: white; }

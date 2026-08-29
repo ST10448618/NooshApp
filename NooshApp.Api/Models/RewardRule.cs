@@ -9,6 +9,7 @@ namespace NooshApp.Api.Models
         [Required] public int PointsRequired { get; set; }
         [Required, MaxLength(200)] public string RewardDescription { get; set; } = string.Empty;
         public bool IsActive { get; set; } = true;
+        public bool IsDeleted { get; set; } = false;
         public int DisplayOrder { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

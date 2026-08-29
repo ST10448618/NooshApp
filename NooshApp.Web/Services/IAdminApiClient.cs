@@ -9,5 +9,6 @@ namespace NooshApp.Web.Services
         Task<bool> UpdateRewardRuleAsync(string adminKey, int id, string name, int pointsRequired, string description, bool isActive, int displayOrder);
         Task<AppSettingsDto> GetSettingsAsync(string adminKey);
         Task<bool> UpdateSettingsAsync(string adminKey, decimal pointsPerRand);
+        Task<bool> DeleteRewardRuleAsync(string adminKey, int id);
     }
 }

@@ -7,6 +7,7 @@ namespace NooshApp.Api.Services.Interfaces
         Task<List<RewardRule>> GetAllRewardRulesAsync();
         Task<RewardRule> CreateRewardRuleAsync(string name, int pointsRequired, string description);
         Task<RewardRule?> UpdateRewardRuleAsync(int id, string name, int pointsRequired, string description, bool isActive, int displayOrder);
+        Task DeleteRewardRuleAsync(int id);
         Task<AppSettings> GetSettingsAsync();
         Task UpdatePointsPerRandAsync(decimal pointsPerRand);
         

@@ -39,6 +39,7 @@ namespace NooshApp.Api.Services
 
         public async Task<AppSettings> GetSettingsAsync() => await _appSettingsRepository.GetAsync();
         public async Task UpdatePointsPerRandAsync(decimal pointsPerRand) => await _appSettingsRepository.UpdateAsync(pointsPerRand);
+        public async Task DeleteRewardRuleAsync(int id) => await _rewardRuleRepository.DeleteAsync(id);
         
     }
 }

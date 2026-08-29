@@ -54,5 +54,12 @@ namespace NooshApp.Web.Services
             var response = await _httpClient.SendAsync(request);
             return response.IsSuccessStatusCode;
         }
+
+        public async Task<bool> DeleteRewardRuleAsync(string adminKey, int id)
+        {
+            var request = BuildRequest(HttpMethod.Delete, $"api/admin/reward-rules/{id}", adminKey);
+            var response = await _httpClient.SendAsync(request);
+            return response.IsSuccessStatusCode;
+        }
     }
 }
