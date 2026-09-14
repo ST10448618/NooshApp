@@ -1,12 +1,9 @@
-// Service Worker for NOOSH PWA.
-// Handles install-time caching, activation cleanup, and fetch interception
-// for offline support.
+// Service Worker for NOOSH PWA
+// Handles install-time caching, activation cleanup,
+// offline navigation, and fast static asset loading.
 
-const CACHE_VERSION = 'noosh-cache-v9';
+const CACHE_VERSION = 'noosh-cache-v10';
 
-// Core assets needed for the app shell to work offline.
-// Keep this list focused — cache what's needed for basic navigation,
-// not every possible page (dynamic pages like Menu/Rewards need live data anyway).
 const CORE_ASSETS = [
     '/',
     '/offline.html',
@@ -15,30 +12,29 @@ const CORE_ASSETS = [
     '/lib/bootstrap/dist/css/bootstrap.min.css',
     '/lib/bootstrap/dist/js/bootstrap.bundle.min.js',
     '/images/icons/icon-192.png',
-    '/images/icons/icon-512.png',
+    '/images/icons/icon-512.png'
 ];
 
-// --- INSTALL: runs once when the service worker is first registered ---
+// INSTALL
 self.addEventListener('install', function (event) {
     event.waitUntil(
-        caches.open(CACHE_VERSION).then(function (cache) {
-            return cache.addAll(CORE_ASSETS);
-        })
+        caches.open(CACHE_VERSION)
+            .then(function (cache) {
+                return cache.addAll(CORE_ASSETS);
+            })
     );
 
-    // Activate this new service worker immediately, without waiting
-    // for old tabs using a previous version to close.
     self.skipWaiting();
 });
 
-// --- ACTIVATE: runs after install, good place to clean up old caches ---
+// ACTIVATE
 self.addEventListener('activate', function (event) {
     event.waitUntil(
         caches.keys().then(function (cacheNames) {
             return Promise.all(
                 cacheNames
                     .filter(function (name) {
-                        return name !== CACHE_VERSION; // remove any cache from a previous version
+                        return name !== CACHE_VERSION;
                     })
                     .map(function (name) {
                         return caches.delete(name);
@@ -50,52 +46,81 @@ self.addEventListener('activate', function (event) {
     self.clients.claim();
 });
 
-// --- FETCH: intercepts every network request the page makes ---
+// FETCH
 self.addEventListener('fetch', function (event) {
     const request = event.request;
 
-    // Only handle GET requests — never cache POST (form submissions, logins, etc.)
     if (request.method !== 'GET') {
         return;
     }
 
-    // Strategy: Network-first for page navigations (HTML documents),
-    // so users always see live content when online, but get a graceful
-    // offline page instead of a browser error when they're not.
+    // Page navigation
     if (request.mode === 'navigate') {
         event.respondWith(
-            fetch(request).catch(function () {
-                return caches.match('/offline.html');
-            })
+            fetch(request)
+                .catch(function () {
+                    return caches.match('/offline.html');
+                })
         );
+
         return;
     }
 
-    // Strategy: Cache-first for static assets (CSS, JS, images) —
-    // these rarely change and loading from cache is instant.
-    event.respondWith(
-        caches.match(request).then(function (cachedResponse) {
-            if (cachedResponse) {
-                return cachedResponse;
-            }
+    const url = new URL(request.url);
 
-            return fetch(request).then(function (networkResponse) {
-                // Cache successful responses for next time, but only
-                // for same-origin requests (don't cache third-party CDN calls
-                // like Font Awesome/Google Fonts indefinitely without control).
-                if (networkResponse.ok && request.url.startsWith(self.location.origin)) {
-                    return caches.open(CACHE_VERSION).then(function (cache) {
-                        cache.put(request, networkResponse.clone());
+    // Never cache API requests
+    if (url.pathname.startsWith('/api/')) {
+        event.respondWith(
+            fetch(request)
+                .catch(function () {
+                    return Response.error();
+                })
+        );
+
+        return;
+    }
+
+    // Cache same-origin static assets
+    if (url.origin === self.location.origin) {
+        event.respondWith(
+            caches.match(request).then(function (cachedResponse) {
+
+                const networkFetch = fetch(request)
+                    .then(function (networkResponse) {
+
+                        if (networkResponse.ok) {
+                            caches.open(CACHE_VERSION)
+                                .then(function (cache) {
+                                    cache.put(
+                                        request,
+                                        networkResponse.clone()
+                                    );
+                                });
+                        }
+
                         return networkResponse;
+                    })
+                    .catch(function () {
+                        if (cachedResponse) {
+                            return cachedResponse;
+                        }
+
+                        return Response.error();
                     });
+
+                if (cachedResponse) {
+                    return cachedResponse;
                 }
 
-                return networkResponse;
-            }).catch(function () {
-                // Network failed and nothing cached — nothing more we can do
-                // for this particular asset (e.g. an image), so this may 404
-                // gracefully in the browser depending on the resource type.
-            });
-        })
+                return networkFetch;
+            })
+        );
+
+        return;
+    }
+
+    // Third-party requests
+    event.respondWith(
+        fetch(request)
     );
 });

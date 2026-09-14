@@ -30,9 +30,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const choice = await deferredInstallPrompt.userChoice;
 
-            // Whether they accepted or dismissed, the prompt can only be used once.
+            if (choice.outcome === 'accepted') {
+                installBtn.classList.add('d-none');
+            }
+
             deferredInstallPrompt = null;
-            installBtn.classList.add('d-none');
 
             console.log('PWA install choice:', choice.outcome);
         });
