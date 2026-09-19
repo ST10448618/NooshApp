@@ -17,8 +17,10 @@
 <body class="internal-page-body">
     <div class="internal-topbar">
         <span class="brand">NOOSH<span> Admin</span></span>
-        <a asp-controller="Admin" asp-action="MenuItems" class="internal-link">Menu</a>
-        <a asp-controller="Admin" asp-action="Logout" class="internal-link">Log out</a>
+        <div class="d-flex gap-2">
+            <a asp-controller="Admin" asp-action="MenuItems" class="internal-link">Menu</a>
+            <a asp-controller="Admin" asp-action="Logout" class="internal-link">Log out</a>
+        </div>
     </div>
 
     <div class="internal-content wide">
