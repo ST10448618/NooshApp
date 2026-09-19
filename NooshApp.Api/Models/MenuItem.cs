@@ -48,5 +48,6 @@ namespace NooshApp.Api.Models
         public bool ContainsWheat { get; set; } = false;
         public bool ContainsDairy { get; set; } = false;
         public bool ContainsSesame { get; set; } = false;
+        public bool IsDeleted { get; set; } = false;
     }
 }

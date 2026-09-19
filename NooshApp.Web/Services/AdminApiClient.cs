@@ -61,5 +61,52 @@ namespace NooshApp.Web.Services
             var response = await _httpClient.SendAsync(request);
             return response.IsSuccessStatusCode;
         }
+
+        public async Task<List<MenuItemAdminDto>> GetAllMenuItemsAsync(string adminKey)
+        {
+            var request = BuildRequest(HttpMethod.Get, "api/admin/menu-items", adminKey);
+            var response = await _httpClient.SendAsync(request);
+            if (!response.IsSuccessStatusCode) return new();
+            return await response.Content.ReadFromJsonAsync<List<MenuItemAdminDto>>() ?? new();
+        }
+
+        public async Task<bool> CreateMenuItemAsync(string adminKey, object payload)
+        {
+            var request = BuildRequest(HttpMethod.Post, "api/admin/menu-items", adminKey, payload);
+            var response = await _httpClient.SendAsync(request);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> UpdateMenuItemAsync(string adminKey, int id, object payload)
+        {
+            var request = BuildRequest(HttpMethod.Put, $"api/admin/menu-items/{id}", adminKey, payload);
+            var response = await _httpClient.SendAsync(request);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DeleteMenuItemAsync(string adminKey, int id)
+        {
+            var request = BuildRequest(HttpMethod.Delete, $"api/admin/menu-items/{id}", adminKey);
+            var response = await _httpClient.SendAsync(request);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<string?> UploadMenuItemImageAsync(string adminKey, int id, IFormFile image)
+        {
+            using var content = new MultipartFormDataContent();
+            using var stream = image.OpenReadStream();
+            using var fileContent = new StreamContent(stream);
+            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(image.ContentType);
+            content.Add(fileContent, "image", image.FileName);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, $"api/admin/menu-items/{id}/image") { Content = content };
+            request.Headers.Add("X-Admin-Key", adminKey);
+
+            var response = await _httpClient.SendAsync(request);
+            if (!response.IsSuccessStatusCode) return null;
+
+            var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+            return result != null && result.TryGetValue("imageUrl", out var url) ? url : null;
+        }
     }
 }

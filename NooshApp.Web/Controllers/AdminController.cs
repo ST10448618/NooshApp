@@ -88,5 +88,63 @@ namespace NooshApp.Web.Controllers
             await _adminApiClient.DeleteRewardRuleAsync(adminKey, id);
             return RedirectToAction("Rewards");
         }
+
+        public async Task<IActionResult> MenuItems()
+        {
+            if (!HttpContext.Session.IsAdminAuthenticated()) return RedirectToAction("Login");
+            var adminKey = HttpContext.Session.GetAdminKey()!;
+            ViewBag.MenuItems = await _adminApiClient.GetAllMenuItemsAsync(adminKey);
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateMenuItem(string name, string? description, decimal price, string category,
+            bool isPopular, bool isVegetarian, int spiceLevel, bool containsEggs, bool containsWheat, bool containsDairy, bool containsSesame)
+        {
+            var adminKey = HttpContext.Session.GetAdminKey();
+            if (string.IsNullOrEmpty(adminKey)) return Unauthorized();
+
+            await _adminApiClient.CreateMenuItemAsync(adminKey, new
+            {
+                name, description, price, category, isPopular, isVegetarian, spiceLevel,
+                containsEggs, containsWheat, containsDairy, containsSesame
+            });
+            return RedirectToAction("MenuItems");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateMenuItem(int id, string name, string? description, decimal price, string category,
+            bool isPopular, bool isVegetarian, int spiceLevel, bool containsEggs, bool containsWheat, bool containsDairy, bool containsSesame, bool isAvailable)
+        {
+            var adminKey = HttpContext.Session.GetAdminKey();
+            if (string.IsNullOrEmpty(adminKey)) return Unauthorized();
+
+            await _adminApiClient.UpdateMenuItemAsync(adminKey, id, new
+            {
+                name, description, price, category, isPopular, isVegetarian, spiceLevel,
+                containsEggs, containsWheat, containsDairy, containsSesame, isAvailable
+            });
+            return RedirectToAction("MenuItems");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteMenuItem(int id)
+        {
+            var adminKey = HttpContext.Session.GetAdminKey();
+            if (string.IsNullOrEmpty(adminKey)) return Unauthorized();
+
+            await _adminApiClient.DeleteMenuItemAsync(adminKey, id);
+            return RedirectToAction("MenuItems");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadMenuItemImage(int id, IFormFile image)
+        {
+            var adminKey = HttpContext.Session.GetAdminKey();
+            if (string.IsNullOrEmpty(adminKey)) return Unauthorized();
+
+            await _adminApiClient.UploadMenuItemImageAsync(adminKey, id, image);
+            return RedirectToAction("MenuItems");
+        }
     }
 }
