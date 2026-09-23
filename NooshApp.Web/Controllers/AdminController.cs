@@ -143,7 +143,19 @@ namespace NooshApp.Web.Controllers
             var adminKey = HttpContext.Session.GetAdminKey();
             if (string.IsNullOrEmpty(adminKey)) return Unauthorized();
 
-            await _adminApiClient.UploadMenuItemImageAsync(adminKey, id, image);
+            if (image == null || image.Length == 0)
+            {
+                TempData["UploadError"] = "No file was selected.";
+                return RedirectToAction("MenuItems");
+            }
+
+            var resultUrl = await _adminApiClient.UploadMenuItemImageAsync(adminKey, id, image);
+
+            if (resultUrl == null)
+            {
+                TempData["UploadError"] = $"Upload failed for item {id} — check file type (.jpg/.jpeg/.png only) and size (max 5MB).";
+            }
+
             return RedirectToAction("MenuItems");
         }
     }

@@ -126,5 +126,13 @@ namespace NooshApp.Api.Services
 
             return item.ImageUrl;
         }
+
+        public async Task UpdateMenuItemImageUrlAsync(int id, string absoluteImageUrl)
+        {
+            var item = await _menuItemRepository.GetByIdAsync(id);
+            if (item == null) return;
+            item.ImageUrl = absoluteImageUrl;
+            await _menuItemRepository.UpdateAsync(item);
+        }
     }
 }

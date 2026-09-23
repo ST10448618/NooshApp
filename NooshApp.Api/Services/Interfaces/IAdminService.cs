@@ -17,5 +17,6 @@ namespace NooshApp.Api.Services.Interfaces
         Task<MenuItem?> UpdateMenuItemAsync(int id, UpdateMenuItemRequestDto request);
         Task DeleteMenuItemAsync(int id);
         Task<string?> UploadMenuItemImageAsync(int id, IFormFile image);
+        Task UpdateMenuItemImageUrlAsync(int id, string absoluteImageUrl);
     }
 }

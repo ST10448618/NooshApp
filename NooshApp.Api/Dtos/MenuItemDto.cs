@@ -1,10 +1,5 @@
 namespace NooshApp.Api.Dtos
 {
-    /// <summary>
-    /// The shape returned to any client (NooshApp.Web, or later, a mobile
-    /// app). Deliberately separate from the MenuItem entity so the API's
-    /// public contract doesn't change every time the database schema does.
-    /// </summary>
     public class MenuItemDto
     {
         public int Id { get; set; }

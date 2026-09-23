@@ -22,6 +22,11 @@
         </div>
     </div>
 
+    @if (TempData["UploadError"] != null)
+    {
+        <div class="staff-status error mb-3">@TempData["UploadError"]</div>
+    }
+
     <div class="internal-content wide">
         <div class="admin-add-card">
             <h4>Add New Menu Item</h4>
