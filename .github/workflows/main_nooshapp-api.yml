@@ -1,0 +1,74 @@
+# Docs for the Azure Web Apps Deploy action:
+# https://github.com/Azure/webapps-deploy
+#
+# More GitHub Actions for Azure:
+# https://github.com/Azure/actions
+
+name: Build and deploy ASP.NET Core API to Azure Web App - nooshapp-api
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.x'
+
+      - name: Restore API project
+        run: dotnet restore NooshApp.Api/NooshApp.Api.csproj
+
+      - name: Build API project
+        run: dotnet build NooshApp.Api/NooshApp.Api.csproj --configuration Release --no-restore
+
+      - name: Publish API project
+        run: dotnet publish NooshApp.Api/NooshApp.Api.csproj --configuration Release --no-build --output ./publish
+
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-app
+          path: ./publish
+
+  deploy:
+    runs-on: ubuntu-latest
+
+    needs: build
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: api-app
+          path: ./publish
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_4C8D71E2F6BF4A5DB82153AA5A364A64 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_2813D88E4C2A4DA0B4B5B24C9C885CC8 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_076227AB9797457AB613BE45D659D455 }}
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'nooshapp-api'
+          slot-name: 'Production'
+          package: ./publish
