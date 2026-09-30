@@ -13,7 +13,24 @@ namespace NooshApp.Api.Data
 
         private static void SeedMenuItems(ApplicationDbContext context, string selfBaseUrl)
         {
-            if (context.MenuItems.Any()) return;
+            if (context.MenuItems.Any())
+            {
+                foreach (var item in context.MenuItems)
+                {
+                    if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                    {
+                        var fileName = Path.GetFileName(
+                            new Uri(item.ImageUrl).AbsolutePath
+                        );
+
+                        item.ImageUrl =
+                            $"{selfBaseUrl.TrimEnd('/')}/images/menu/{fileName}";
+                    }
+                }
+
+                context.SaveChanges();
+                return;
+            }
 
             var items = new List<MenuItem>
             {
