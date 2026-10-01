@@ -14,8 +14,6 @@ namespace NooshApp.Web.Controllers
         [HttpGet]
         public IActionResult Login()
         {
-            if (HttpContext.IsLoggedIn()) return RedirectToAction("Index", "Rewards");
-
             ViewBag.FirebaseApiKey = _configuration["Firebase:ApiKey"];
             ViewBag.FirebaseAuthDomain = _configuration["Firebase:AuthDomain"];
             ViewBag.FirebaseProjectId = _configuration["Firebase:ProjectId"];
