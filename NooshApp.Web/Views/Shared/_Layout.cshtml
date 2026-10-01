@@ -60,7 +60,7 @@
                     </ul>
 
                     <div class="account-corner">
-                        @if (Context.IsLoggedIn())
+                        @if (Context.Session.IsLoggedIn())
                         {
                             <div class="dropdown">
                                 <button class="account-trigger-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
