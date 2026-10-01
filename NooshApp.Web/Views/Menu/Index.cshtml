@@ -93,7 +93,6 @@
                     </div>
                 </div>
             </div>
-            </div>
         </div>
         <p class="menu-legend-hashtag">#HowDoYouNOOSH?</p>
     </div>
@@ -116,33 +115,38 @@
                         <div class="meal-card-body">
                             <h5 class="meal-name">@item.Name</h5>
                             <p class="meal-description">@item.Description</p>
+
                             <div class="meal-footer">
-                            <span class="meal-price">R@(item.Price.ToString("0.00"))</span>
+                                <span class="meal-price">R@(item.Price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture))</span>
 
-                            <div class="meal-tags">
-                                @if (item.IsVegetarian)
-                                {
-                                    <i class="fa-solid fa-leaf tag-veg" title="Vegetarian"></i>
-                                }
+                                <div class="meal-actions">
+                                    <button class="favourite-btn"
+                                            type="button"
+                                            data-item-id="@item.Id"
+                                            aria-label="Favourite @item.Name"
+                                            onclick="toggleFavourite(this)">
+                                        <i class="fa-regular fa-heart"></i>
+                                    </button>
 
-                                <partial name="_AllergenIcons" model="item" />
+                                    <button class="btn btn-hero-secondary btn-sm customize-btn"
+                                            type="button"
+                                            data-name="@item.Name"
+                                            data-price="@item.Price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)"
+                                            aria-label="Customize @item.Name"
+                                            onclick="openCustomizeModal(this.dataset.name, this.dataset.price)">
+                                        <i class="fa-solid fa-sliders"></i>
+                                    </button>
+                                </div>
+
+                                <div class="meal-tags">
+                                    @if (item.IsVegetarian)
+                                    {
+                                        <i class="fa-solid fa-leaf tag-veg" title="Vegetarian"></i>
+                                    }
+
+                                    <partial name="_AllergenIcons" model="item" />
+                                </div>
                             </div>
-
-                            <div class="meal-actions">
-                                <button class="favourite-btn"
-                                        type="button"
-                                        data-item-id="@item.Id"
-                                        onclick="toggleFavourite(this)">
-                                    <i class="fa-regular fa-heart"></i>
-                                </button>
-
-                                <button class="btn btn-hero-secondary btn-sm customize-btn"
-                                        type="button"
-                                        onclick="openCustomizeModal('@item.Name', @item.Price.ToString("0.00"))">
-                                    <i class="fa-solid fa-sliders"></i>
-                                </button>
-                            </div>
-                        </div>
                         </div>
                     </div>
                 </div>
@@ -280,5 +284,4 @@
         });
     })();
     </script>
-}
 }
