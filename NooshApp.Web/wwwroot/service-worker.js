@@ -2,7 +2,7 @@
 // Handles install-time caching, activation cleanup,
 // offline navigation, and fast static asset loading.
 
-const CACHE_VERSION = 'noosh-cache-v10';
+const CACHE_VERSION = 'noosh-cache-v11';
 
 const CORE_ASSETS = [
     '/',
