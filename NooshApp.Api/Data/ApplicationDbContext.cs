@@ -25,6 +25,7 @@ namespace NooshApp.Api.Data
         public DbSet<ReceiptSubmission> ReceiptSubmissions { get; set; }
         public DbSet<AppSettings> AppSettings { get; set; }
         public DbSet<SupportingDocument> SupportingDocuments { get; set; }
+        public DbSet<Favourite> Favourites { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -32,18 +33,10 @@ namespace NooshApp.Api.Data
             modelBuilder.Entity<ScanToken>().HasIndex(t => t.Token).IsUnique();
             modelBuilder.Entity<ReceiptSubmission>()
                 .HasIndex(r => new { r.ReceiptReference, r.AmountPaid, r.PurchaseDate }).IsUnique();
-        }   
-        /*public DbSet<RewardHistory> RewardHistories { get; set; }
-        public DbSet<RewardMilestone> RewardMilestones { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-
-            // Enforce that no two users can share the same phone number.
-            modelBuilder.Entity<User>()
-                .HasIndex(u => u.PhoneNumber)
+            // inside OnModelCreating
+            modelBuilder.Entity<Favourite>()
+                .HasIndex(f => new { f.CustomerId, f.MenuItemId })
                 .IsUnique();
-        }*/
+        }   
     }
 }

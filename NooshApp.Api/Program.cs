@@ -48,6 +48,8 @@ builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<NooshApp.Api.Auth.FirebaseAuthFilter>();
 builder.Services.AddScoped<NooshApp.Api.Auth.StaffPinFilter>();
 builder.Services.AddScoped<NooshApp.Api.Auth.AdminKeyFilter>();
+builder.Services.AddScoped<IFavouriteRepository, FavouriteRepository>();
+builder.Services.AddScoped<IFavouriteService, FavouriteService>();
 
 builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
 {

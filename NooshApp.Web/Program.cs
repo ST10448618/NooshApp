@@ -2,6 +2,7 @@ using NooshApp.Web.Services;
 using NooshApp.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +42,19 @@ builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(optio
 {
     options.MultipartBodyLengthLimit = 10 * 1024 * 1024;
 });
+builder.Services.AddHttpClient<IFavouritesApiClient, FavouritesApiClient>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"] ?? "https://localhost:7050/");
+});
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.ExpireTimeSpan = TimeSpan.FromDays(30);   // stays logged in for 30 days
+        options.SlidingExpiration = true;                 // refreshes on activity
+        options.Cookie.HttpOnly = true;
+    });
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
