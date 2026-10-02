@@ -128,6 +128,8 @@
                                         <i class="fa-regular fa-heart"></i>
                                     </button>
 
+                                     @if (item.Category == "Shawarma Wraps" || item.Category == "Shawarma Bowls")
+                                    {
                                     <button class="btn btn-hero-secondary btn-sm customize-btn"
                                             type="button"
                                             data-name="@item.Name"
@@ -136,6 +138,7 @@
                                             onclick="openCustomizeModal(this.dataset.name, this.dataset.price)">
                                         <i class="fa-solid fa-sliders"></i>
                                     </button>
+                                    }
                                 </div>
 
                                 <div class="meal-tags">
@@ -168,7 +171,7 @@
         <div class="ingredient-grid" id="customizeExtras">
             <button type="button" class="ingredient-toggle" data-name="Extra Cheese"><i class="fa-solid fa-cheese"></i><span>Extra Cheese</span><i class="fa-solid fa-circle-check ingredient-check"></i></button>
             <button type="button" class="ingredient-toggle" data-name="Extra Sauce"><i class="fa-solid fa-droplet"></i><span>Extra Sauce</span><i class="fa-solid fa-circle-check ingredient-check"></i></button>
-            <button type="button" class="ingredient-toggle" data-name="Avocado"><i class="fa-solid fa-leaf"></i><span>Avocado</span><i class="fa-solid fa-circle-check ingredient-check"></i></button>
+            <button type="button" class="ingredient-toggle" data-name="Fries"><i class="fa-solid fa-fries"></i><span>Fries</span><i class="fa-solid fa-circle-check ingredient-check"></i></button>
         </div>
 
         <p class="builder-hint mt-3">Removals — tap to remove</p>
@@ -204,7 +207,6 @@
     <script src="~/js/menu-filter.js"></script>
     <script>
     (function () {
-        // ---- Favourites toggle — isolated in its own try/catch ----
         document.addEventListener('click', async function (e) {
             const btn = e.target.closest('.favourite-btn');
             if (!btn) return;
@@ -239,7 +241,6 @@
 
     <script>
     (function () {
-        // ---- Customize modal — isolated in its own IIFE ----
         let customizeBasePrice = 0;
         let customizeItemName = '';
 
