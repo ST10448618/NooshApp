@@ -5,5 +5,6 @@ namespace NooshApp.Api.Services.Interfaces
     public interface IEmailService
     {
         Task SendCareerApplicationNotificationAsync(JobApplication application, List<string> attachmentPaths);
+        Task SendCateringNotificationAsync(CateringRequest request);
     }
 }

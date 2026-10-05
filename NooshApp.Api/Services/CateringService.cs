@@ -8,24 +8,26 @@ namespace NooshApp.Api.Services
     public class CateringService : ICateringService
     {
         private readonly ICateringRepository _cateringRepository;
-        public CateringService(ICateringRepository cateringRepository) { _cateringRepository = cateringRepository; }
+        private readonly IEmailService _emailService;
 
         public async Task<CateringRequestDto> SubmitRequestAsync(CateringRequestCreateDto request)
         {
             var entity = new CateringRequest
             {
-                FullName = request.FullName,
-                PhoneNumber = request.PhoneNumber,
-                Email = request.Email,
-                EventDate = request.EventDate,
-                GuestCount = request.GuestCount,
-                EventLocation = request.EventLocation,
-                AdditionalNotes = request.AdditionalNotes,
-                Status = CateringStatus.New,
-                SubmittedAt = DateTime.UtcNow
+                FullName = request.FullName, PhoneNumber = request.PhoneNumber, Email = request.Email,
+                EventDate = request.EventDate, GuestCount = request.GuestCount,
+                EventLocation = request.EventLocation, AdditionalNotes = request.AdditionalNotes,
+                Status = CateringStatus.New, SubmittedAt = DateTime.UtcNow
             };
 
             await _cateringRepository.AddAsync(entity);
+
+            _ = Task.Run(async () =>
+            {
+                try { await _emailService.SendCateringNotificationAsync(entity); }
+                catch { /* logged internally */ }
+            });
+
             return ToDto(entity);
         }
 

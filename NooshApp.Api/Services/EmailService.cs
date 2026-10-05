@@ -97,5 +97,56 @@ namespace NooshApp.Api.Services
                 _logger.LogError(ex, "Failed to send career application email via SMTP.");
             }
         }
+
+        public async Task SendCateringNotificationAsync(CateringRequest request)
+        {
+            var smtpHost = _configuration["Smtp:Host"];
+            var smtpPort = int.Parse(_configuration["Smtp:Port"] ?? "587");
+            var smtpUser = _configuration["Smtp:Username"];
+            var smtpPass = _configuration["Smtp:Password"];
+            var fromEmail = _configuration["Smtp:FromEmail"];
+            var fromName = _configuration["Smtp:FromName"] ?? "Noosh Website";
+            var ownerEmail = _configuration["BusinessContact:CateringEmail"];
+
+            if (string.IsNullOrEmpty(smtpHost) || string.IsNullOrEmpty(ownerEmail))
+            {
+                _logger.LogWarning("SMTP not configured — skipping catering email.");
+                return;
+            }
+
+            try
+            {
+                var message = new MimeMessage();
+                message.From.Add(new MailboxAddress(fromName, fromEmail));
+                message.To.Add(MailboxAddress.Parse(ownerEmail));
+                message.Subject = $"New Catering Request: {request.FullName} — {request.EventLocation}";
+                message.Body = new TextPart("html")
+                {
+                    Text = $@"
+                        <h2>New Catering Request</h2>
+                        <p><strong>Name:</strong> {request.FullName}</p>
+                        <p><strong>Phone:</strong> {request.PhoneNumber}</p>
+                        <p><strong>Email:</strong> {request.Email}</p>
+                        <p><strong>Event Date:</strong> {request.EventDate:dd MMM yyyy}</p>
+                        <p><strong>Guests:</strong> {request.GuestCount}</p>
+                        <p><strong>Location:</strong> {request.EventLocation}</p>
+                        <p><strong>Notes:</strong> {request.AdditionalNotes ?? "(none)"}</p>
+                        <p><strong>Reference:</strong> #{request.Id}</p>"
+                };
+
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+                using var client = new SmtpClient();
+                var secureOption = smtpPort == 465 ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.StartTls;
+                await client.ConnectAsync(smtpHost, smtpPort, secureOption, cts.Token);
+                await client.AuthenticateAsync(smtpUser, smtpPass, cts.Token);
+                await client.SendAsync(message, cts.Token);
+                await client.DisconnectAsync(true, cts.Token);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send catering email.");
+            }
+        }
+
     }
 }
