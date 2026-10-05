@@ -19,12 +19,26 @@ namespace NooshApp.Api.Data
                 {
                     if (!string.IsNullOrWhiteSpace(item.ImageUrl))
                     {
-                        var fileName = Path.GetFileName(
-                            new Uri(item.ImageUrl).AbsolutePath
-                        );
+                        var imageUrl = item.ImageUrl.Trim();
 
-                        item.ImageUrl =
-                            $"{selfBaseUrl.TrimEnd('/')}/images/menu/{fileName}";
+                        string fileName;
+
+                        if (Uri.TryCreate(imageUrl, UriKind.Absolute, out var uri))
+                        {
+                            fileName = Path.GetFileName(uri.AbsolutePath);
+                        }
+                        else
+                        {
+                            fileName = Path.GetFileName(
+                                imageUrl.TrimStart('/')
+                            );
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(fileName))
+                        {
+                            item.ImageUrl =
+                                $"{selfBaseUrl.TrimEnd('/')}/images/menu/{fileName}";
+                        }
                     }
                 }
 
