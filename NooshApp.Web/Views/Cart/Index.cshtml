@@ -1,0 +1,78 @@
+@{ ViewData["Title"] = "My Cart"; }
+
+<section class="rewards-hero">
+    <div class="container">
+        <p class="section-eyebrow">Noosh</p>
+        <h1 class="menu-hero-title">My Cart</h1>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div id="cartItemsContainer"></div>
+        <div id="cartEmptyState" class="d-none">
+            <p class="rewards-empty text-center">Your cart is empty — browse the menu and add something delicious.</p>
+            <div class="text-center"><a asp-controller="Menu" asp-action="Index" class="btn btn-hero-primary">Browse Menu</a></div>
+        </div>
+        <div id="cartTotalRow" class="d-none mt-4 d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Total</h4>
+            <h4 class="mb-0" id="cartTotalPrice"></h4>
+        </div>
+        <button class="btn btn-hero-secondary w-100 mt-3 d-none" id="clearCartBtn">Clear Cart</button>
+    </div>
+</section>
+
+@section Scripts {
+<script>
+    function renderCart() {
+        const cart = NooshCart.getCart();
+        const container = document.getElementById('cartItemsContainer');
+        const emptyState = document.getElementById('cartEmptyState');
+        const totalRow = document.getElementById('cartTotalRow');
+        const clearBtn = document.getElementById('clearCartBtn');
+
+        if (cart.length === 0) {
+            container.innerHTML = '';
+            emptyState.classList.remove('d-none');
+            totalRow.classList.add('d-none');
+            clearBtn.classList.add('d-none');
+            return;
+        }
+
+        emptyState.classList.add('d-none');
+        totalRow.classList.remove('d-none');
+        clearBtn.classList.remove('d-none');
+
+        let total = 0;
+        container.innerHTML = cart.map((item, index) => {
+            total += item.price;
+            return `<div class="store-card mb-3 p-3 d-flex justify-content-between align-items-start">
+                <div>
+                    <h5 class="mb-1">${item.name}</h5>
+                    <p class="mb-0" style="font-size:0.85rem;color:var(--color-gray-mid);white-space:pre-line;">${item.summary || ''}</p>
+                </div>
+                <div class="text-end">
+                    <p class="fw-bold mb-2">R${item.price.toFixed(2)}</p>
+                    <button class="admin-delete-btn" onclick="removeItem(${index})"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </div>`;
+        }).join('');
+
+        document.getElementById('cartTotalPrice').textContent = 'R' + total.toFixed(2);
+    }
+
+    function removeItem(index) {
+        NooshCart.removeFromCart(index);
+        renderCart();
+    }
+
+    document.getElementById('clearCartBtn').addEventListener('click', () => {
+        if (confirm('Clear your entire cart?')) {
+            NooshCart.clearCart();
+            renderCart();
+        }
+    });
+
+    renderCart();
+</script>
+}

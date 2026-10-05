@@ -2239,8 +2239,6 @@ h1, h2, h3, h4, h5, h6 {
         justify-content: center;
     }
 
-    /* Mobile: dropdown flows inline under the button instead of floating
-       (Popper was pushing it off the left edge of the screen) */
     .account-corner .dropdown-menu,
     .account-corner .account-dropdown {
         position: static !important;
@@ -2251,4 +2249,63 @@ h1, h2, h3, h4, h5, h6 {
         min-width: 0;
         margin-top: 0.5rem;
     }
+
+.cart-corner {
+    display: flex;
+    align-items: center;
+    margin-left: 0.75rem;   /* space between account and cart */
+}
+
+.cart-trigger-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 2px solid var(--color-ink);
+    border-radius: 50%;
+    color: #000;
+    text-decoration: none;
+    transition: transform 0.15s ease;
+}
+
+.cart-trigger-btn:hover,
+.cart-trigger-btn:focus,
+.cart-trigger-btn:active {
+    color: #000;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.cart-trigger-btn i {
+    color: #000;
+    font-size: 1.1rem;
+}
+
+.cart-item-count-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #E53935;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 800;
+    border-radius: 999px;
+    border: 2px solid var(--color-primary);
+}
+
+@media (max-width: 991.98px) {
+    .cart-corner {
+        margin-left: 0;
+        margin-top: 0.75rem;
+        justify-content: center;
+    }
+}
 }

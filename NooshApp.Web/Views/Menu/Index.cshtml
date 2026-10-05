@@ -1,6 +1,12 @@
 @model NooshApp.Web.ViewModels.MenuViewModel
 @{
     ViewData["Title"] = "Menu";
+
+        var customizableCategories = new[]
+    {
+        "Shawarma Wraps",
+        "Shawarma Bowls"
+    };
 }
 
 <section class="menu-hero">
@@ -119,6 +125,14 @@
                             <div class="meal-footer">
                                 <span class="meal-price">R@(item.Price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture))</span>
 
+                                @if (!customizableCategories.Contains(item.Category))
+                                {
+                                    <button class="btn btn-hero-secondary btn-sm mt-2 w-100"
+                                            onclick='NooshCart.addToCart({name:"@item.Name", price:@item.Price.ToString("0.00"), summary:""}); showToast("@item.Name added to cart!","success");'>
+                                        <i class="fa-solid fa-cart-plus me-1"></i>
+                                        Add to Cart
+                                    </button>
+                                }
                                 <div class="meal-actions">
                                     <button class="favourite-btn"
                                             type="button"
@@ -268,15 +282,23 @@
             const extras = Array.from(document.querySelectorAll('#customizeExtras .ingredient-toggle.active')).map(b => b.dataset.name);
             const removed = Array.from(document.querySelectorAll('#customizeRemovals .ingredient-toggle:not(.active)')).map(b => b.dataset.name);
             const sauceEl = document.getElementById('customizeSauce');
-            const sideEl = document.getElementById('customizeSide');
+            const sideBlock = document.getElementById('customizeSideBlock');
             const cookingEl = document.getElementById('customizeCooking');
 
-            let summary = `${customizeItemName}\nSauce: ${sauceEl ? sauceEl.value : 'N/A'} | Side: ${sideEl ? sideEl.value : 'N/A'} | Cooking: ${cookingEl ? cookingEl.value : 'N/A'}`;
+            let summary = `Sauce: ${sauceEl ? sauceEl.value : 'N/A'}`;
+            if (sideBlock && sideBlock.style.display !== 'none') {
+                summary += ` | Side: ${document.getElementById('customizeSide').value}`;
+            }
+            summary += ` | Cooking: ${cookingEl ? cookingEl.value : 'N/A'}`;
             if (extras.length) summary += `\nExtras: ${extras.join(', ')}`;
             if (removed.length) summary += `\nRemoved: ${removed.join(', ')}`;
-            summary += `\nTotal: R${customizeBasePrice.toFixed(2)}`;
 
-            alert('Added to order!\n\n' + summary);
+            NooshCart.addToCart({ name: customizeItemName, price: customizeBasePrice, summary: summary });
+
+            if (typeof showToast === 'function') {
+                showToast(`${customizeItemName} added to cart!`, 'success');
+            }
+
             window.closeCustomizeModal();
         };
 

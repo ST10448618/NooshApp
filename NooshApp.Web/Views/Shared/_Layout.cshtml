@@ -89,6 +89,12 @@
                             </a>
                         }
                     </div>
+                    <div class="cart-corner">
+                        <a class="cart-trigger-btn" asp-controller="Cart" asp-action="Index">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                            <span id="cartItemCountBadge" class="cart-item-count-badge d-none">0</span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -163,6 +169,7 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/service-worker-register.js" asp-append-version="true"></script>
     <script src="~/js/image-lazyload.js" asp-append-version="true"></script>
+    <script src="~/js/cart.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

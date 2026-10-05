@@ -10,6 +10,12 @@ namespace NooshApp.Api.Services
         private readonly ICateringRepository _cateringRepository;
         private readonly IEmailService _emailService;
 
+    public CateringService(ICateringRepository cateringRepository, IEmailService emailService)
+    {
+        _cateringRepository = cateringRepository;
+        _emailService = emailService;
+    }
+
         public async Task<CateringRequestDto> SubmitRequestAsync(CateringRequestCreateDto request)
         {
             var entity = new CateringRequest
